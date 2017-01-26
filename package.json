@@ -1,0 +1,22 @@
+{
+  "name": "hathor-utils",
+  "version": "0.0.1",
+  "description": "Utilities for use by Hathor and its plugins.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "lab"
+  },
+  "author": "Jeremy Darling <jeremy.darling@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "json-stringify-safe": "^5.0.1"
+  },
+  "devDependencies": {
+    "code": "^4.0.0",
+    "lab": "^12.0.0",
+    "nodemon": "^1.11.0"
+  }
+}
