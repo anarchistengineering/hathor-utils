@@ -64,6 +64,47 @@ const clone = (src)=>{
   }, {});
 };
 
+const typeOf = (val)=>{
+  if(Array.isArray(val)){
+    return 'array';
+  }
+  if(val instanceof RegExp){
+    return 'regexp';
+  }
+  if(val instanceof Date){
+    return 'date';
+  }
+  return typeof(val);
+};
+
+const merge = (...args)=>{
+  if(!args.length){
+    return {};
+  }
+  return args.reduce((res, arg)=>{
+    if(!res){
+      return arg;
+    }
+    if(Array.isArray(res)){
+      return [...res, ...(Array.isArray(arg)?arg:[arg])];
+    }
+    if(Array.isArray(arg)){
+      return [res, ...arg];
+    }
+    const rType = typeof(res);
+    const aType = typeof(arg);
+    if(rType !== 'object'){
+      return arg;
+    }
+    if(aType !== 'object'){
+      return [res, arg];
+    }
+    return Object.keys(arg).reduce((res, key)=>{
+      return Object.assign({}, res, {[key]: merge(res[key], arg[key])});
+    }, res);
+  }, clone(args[0]));
+};
+
 const keyToPath = (key, splitOn = /[\.\/]/)=>key.split(splitOn);
 
 const getObjectValue = (path, obj, defaultValue)=>{
@@ -194,6 +235,8 @@ module.exports = {
   setObjectValue,
   removeObjectValue,
   clone,
+  typeOf,
+  merge,
   toUnderscore,
   underscoreKeys,
   camelCase,

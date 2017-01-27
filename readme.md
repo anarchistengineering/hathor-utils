@@ -128,6 +128,19 @@ const value = removeObjectValue(keyToPath('foo.bar.value'),  src);
 console.log(value); // {foo: bar: {}}
 ```
 
+merge(source, [obj], [obj], ...)
+---
+
+Creates a deep clone of source and merges the values from each additional argument into the new object.
+
+### Example:
+
+```js
+const src = {foo: 'bar'};
+const out = merge(src, {bar: 'none'}, {some: 'value'});
+console.log(out); // {foo: 'bar', bar: 'none', some: 'value'}
+```
+
 clone(source)
 ---
 

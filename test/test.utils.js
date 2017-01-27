@@ -246,6 +246,38 @@ describe('utils', ()=>{
     });
   });
 
+  describe('merge', ()=>{
+    it('Should be able to merge a single source', (done)=>{
+      const src = {foo: 'bar'};
+      const out = utils.merge(src);
+      expect(out).to.be.an.object().and.to.equal(src);
+      done();
+    });
+
+    it('Should be able to merge two objects', (done)=>{
+      const src = {foo: 'bar'};
+      const out = utils.merge(src, {bar: 'none'});
+      expect(out).to.be.an.object().and.to.equal({foo: 'bar', bar: 'none'});
+      done();
+    });
+
+    it('Should be able to merge three or more objects', (done)=>{
+      const src = {foo: 'bar'};
+      const out = utils.merge(src, {bar: 'none'}, {some: 'value'});
+      expect(out).to.be.an.object().and.to.equal({foo: 'bar', bar: 'none', some: 'value'});
+      done();
+    });
+
+    it('Should be able to merge embedded values', (done)=>{
+      const src = {foo: {
+        bar: 'none'
+      }};
+      const out = utils.merge(src, {foo: {some: 'value'}});
+      expect(out).to.be.an.object().and.to.equal({foo: {bar: 'none', some: 'value'}});
+      done();
+    });
+  });
+
   describe('clone', ()=>{
     it('Should create a copy of an object', (done)=>{
       const src = {foo: 'bar', bar: 'none'};
