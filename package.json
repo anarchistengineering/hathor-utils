@@ -1,6 +1,6 @@
 {
   "name": "hathor-utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Utilities for use by Hathor and its plugins.",
   "main": "index.js",
   "directories": {
