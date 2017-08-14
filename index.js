@@ -20,6 +20,14 @@ const isHtmlPage = (pageName)=>{
   return !!reIsHtml.exec(pageName);
 };
 
+const _reIsDateTime = /^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z|[+-][01]\d:[0-5]\d)$/;
+// ^^ from https://stackoverflow.com/a/43931246
+const isDateTime = (v, reIsDateTime = _reIsDateTime)=>{
+  if(!!(v && reIsDateTime.exec(v.toString()))){
+    return !isNaN(Date.parse(v));
+  }
+  return false;
+};
 const isTrue = (v, reIsTrue = /^true$/i)=>!!(v && reIsTrue.exec(v.toString()));
 const isFalse = (v, reIsFalse = /^false$/i)=>!!((v !== null) && (typeof(v) !== 'undefined') && reIsFalse.exec(v.toString()));
 
@@ -65,16 +73,66 @@ const clone = (src)=>{
 };
 
 const typeOf = (val)=>{
-  if(Array.isArray(val)){
-    return 'array';
+  const type = typeof(val);
+  if(type === 'object'){
+    if(Array.isArray(val)){
+      return 'array';
+    }
+    if(val instanceof RegExp){
+      return 'regex';
+    }
+    if(val instanceof Date){
+      return 'date';
+    }
+    if(val === null){
+      return 'null';
+    }
+    return type;
   }
-  if(val instanceof RegExp){
-    return 'regexp';
+  return type;
+};
+
+const isTheSame = (a, b, maxDepth=100)=>{
+  if(maxDepth < 0){
+    return false;
   }
-  if(val instanceof Date){
-    return 'date';
+  if(a === b){
+    return true;
   }
-  return typeof(val);
+  const typeA = typeOf(a);
+  const typeB = typeOf(b);
+  if(typeA !== typeB){
+    return false;
+  }
+  if(typeA === 'object'){
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    if(!isTheSame(aKeys, bKeys)){
+      return false;
+    }
+    return aKeys.every((key)=>{
+      return isTheSame(a[key], b[key], maxDepth-1);
+    });
+  }
+  if(typeA === 'array'){
+    if(a.length !== b.length){
+      return false;
+    }
+    return a.every((item, index)=>isTheSame(item, b[index], maxDepth-1));
+  }
+  if(typeA === 'date'){
+    return a.getTime() === b.getTime();
+  }
+  if(typeA === 'regex'){
+    return a.toString() === b.toString();
+  }
+  if(typeA === 'null'){
+    return true;
+  }
+  if(typeA === 'undefined'){
+    return true;
+  }
+  return a === b;
 };
 
 const merge = (...args)=>{
@@ -219,6 +277,22 @@ const camelKeys = (obj)=>{
   }, {});
 };
 
+const getTypedValueFrom = exports.getTypedValueFrom = (value) => {
+  if(isNumeric(value)){
+    return +value;
+  }
+  if(isTrue(value)){
+    return true;
+  }
+  if(isFalse(value)){
+    return false;
+  }
+  if(isDateTime(value)){
+    return new Date(Date.parse(value));
+  }
+  return value;
+};
+
 module.exports = {
   noop,
   stringify,
@@ -226,6 +300,7 @@ module.exports = {
   isTrue,
   isFalse,
   isNumeric,
+  isDateTime,
   exclude,
   unique,
   decode64,
@@ -236,9 +311,11 @@ module.exports = {
   removeObjectValue,
   clone,
   typeOf,
+  isTheSame,
   merge,
   toUnderscore,
   underscoreKeys,
   camelCase,
-  camelKeys
+  camelKeys,
+  getTypedValueFrom
 };

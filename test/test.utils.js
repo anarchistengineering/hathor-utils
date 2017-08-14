@@ -438,6 +438,101 @@ describe('utils', ()=>{
     });
   });
 
+  describe('isTheSame', ()=>{
+    it('Should say two strings are the same', (done)=>{
+      const out = utils.isTheSame('foo', 'foo');
+      expect(out).to.equal(true);
+      done();
+    });
+
+    it('Should say two strings are different', (done)=>{
+      const out = utils.isTheSame('foo', 'fob');
+      expect(out).to.equal(false);
+      done();
+    });
+
+    it('Should say two numbers are the same', (done)=>{
+      const out = utils.isTheSame(123.456, 123.456);
+      expect(out).to.equal(true);
+      done();
+    });
+
+    it('Should say two numbers are different', (done)=>{
+      const out = utils.isTheSame(123, 456);
+      expect(out).to.equal(false);
+      done();
+    });
+
+    it('Should say two booleans are the same', (done)=>{
+      const out = utils.isTheSame(true, true);
+      expect(out).to.equal(true);
+      done();
+    });
+
+    it('Should say two booleans are different', (done)=>{
+      const out = utils.isTheSame(true, false);
+      expect(out).to.equal(false);
+      done();
+    });
+
+    it('Should say two objects are the same', (done)=>{
+      const out = utils.isTheSame({a: 1}, {a: 1});
+      expect(out).to.equal(true);
+      done();
+    });
+
+    it('Should say two objects are different', (done)=>{
+      const out = utils.isTheSame({a: 1}, {b: 1});
+      expect(out).to.equal(false);
+      done();
+    });
+
+    it('Should say two arrays are the same', (done)=>{
+      const out = utils.isTheSame([1, 2, 3], [1, 2, 3]);
+      expect(out).to.equal(true);
+      done();
+    });
+
+    it('Should say two arrays are different', (done)=>{
+      const out = utils.isTheSame([{a: 1}], [{b: 1}]);
+      expect(out).to.equal(false);
+      done();
+    });
+
+    it('Should say string of number does not equal number', (done)=>{
+      const out = utils.isTheSame('123', 123);
+      expect(out).to.equal(false);
+      done();
+    });
+  });
+
+  describe('getTypedValueFrom', ()=>{
+    it('Should convert to boolean', (done)=>{
+      const out = utils.getTypedValueFrom('true');
+      expect(out).to.equal(true);
+      done();
+    });
+
+    it('Should convert to number', (done)=>{
+      const out = utils.getTypedValueFrom('123.456');
+      expect(out).to.equal(123.456);
+      done();
+    });
+
+    it('Should convert ISO-8601 strings to Date objects', (done)=>{
+      const valid = [
+              '2015-01-17T18:23:02+06:45',
+              '2015-01-17T18:23:02Z',
+              '2015-01-17T18:23:02-00:00',
+              '2015-03-29T18:23:02+00:00',
+              '2012-02-29T18:23:02.5228Z'
+            ];
+      const out = valid.map(utils.getTypedValueFrom);
+      expect(out).to.equal(valid.map(dt=>new Date(Date.parse(dt))));
+      done();
+    });
+  });
+
 /*
   decode64,
   encode64,
